@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TODO | Javascript</title>
+  <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+  <div class="outer-wrapper">
+    <h1>TODO APP</h1>
+
+    <section class="input-section">
+      <!-- Todo入力エリア -->
+      <div class="input-form-wrapper">
+        <form onsubmit="return false;">
+          <input type="text" id="inputTodo" placeholder="Todoを入力">
+          <button id="addButton" class="add-button">登録</button>
+        </form>
+      </div>
+    </section>
+
+    <section class="incomplete-section">
+      <!-- 未完了のTodo -->
+      <h2>未完了</h2>
+      <!-- todoリストモデル -->
+      <ul id="incompleteList" class="todo-list">
+        <li class="todo-item">
+          <p class="todo-title">todoアイテム</p>
+          <div class="option-buttons">
+            <button class="complete-button">完了</button>
+            <button class="delete-button">削除</button>
+          </div>
+        </li>
+        <li class="todo-item">
+          <p class="todo-title">todoアイテム</p>
+          <div class="option-buttons">
+            <button class="complete-button">完了</button>
+            <button class="delete-button">削除</button>
+          </div>
+        </li>
+      </ul>
+    </section>
+
+    <section class="complete-section">
+      <!-- 未完了のTodo -->
+      <h2>完了</h2>
+      <ul id="completeList" class="todo-list">
+        <li class="todo-item">
+          <p class="todo-title">todoアイテム</p>
+          <div class="option-buttons">
+            <button class="back-button">戻す</button>
+            <button class="delete-button">削除</button>
+          </div>
+        </li>
+        <li class="todo-item">
+          <p class="todo-title">todoアイテム</p>
+          <div class="option-buttons">
+            <button class="back-button">戻す</button>
+            <button class="delete-button">削除</button>
+          </div>
+        </li>
+      </ul>
+    </section>
+  </div>
+
+  <script src="./js/index.js"></script>
+</body>
+</html>
