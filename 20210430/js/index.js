@@ -163,15 +163,15 @@ function addTodoItem() {
 
   // 以下devlopブランチでコメントイン
 
-  // todoItemArray.push(li);
-  // console.log(todoItemArray);
-  // for (let i=0; i < todoItemArray.length; i++) {
-  //   todoItemFragment.appendChild(todoItemArray[i]);
-  // }
-  // console.log(todoItemFragment);
+  todoItemArray.push(li);
+  console.log(todoItemArray);
+  for (let i=0; i < todoItemArray.length; i++) {
+    todoItemFragment.appendChild(todoItemArray[i]);
+  }
+  console.log(todoItemFragment);
 
-  ul.appendChild(li);
-  // ul.appendChild(todoItemFragment);
+  // ul.appendChild(li);
+  ul.appendChild(todoItemFragment);
 
   // backgroundColorを元に戻してinputタグの内容を空にする
   inputFormElem.style.backgroundColor = "#efefef";
