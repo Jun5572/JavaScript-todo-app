@@ -3,8 +3,10 @@ const inputFormElem = document.querySelector(".input-form-wrapper");
 const addButton = document.getElementById("addButton");
 const categorySelectBox = document.getElementById("category");
 // todoアイテムごとに配列で管理するために定義し、空の配列を格納
-let todoItemArray = [];
-
+// 未完了のtodoアイテム配列
+let incompleteTodoItemArray = [];
+// 完了のtodoアイテム配列
+let completeTodoItemArray = [];
 
 addButton.addEventListener("click", addTodoItem);
 
@@ -60,7 +62,7 @@ function addTodoItem() {
   span.classList.add(setCategoryTagClass(categoryValue));
 
 
-  // フォームから入力れた内容を反映させるpタグ生成　
+  // フォームから入力された内容を反映させるpタグ生成　
   // todo-titleクラスを付与し、pタグ内にinputFormの値を格納
   const p = document.createElement("p");
   p.className = "todo-title";
@@ -74,6 +76,9 @@ function addTodoItem() {
   // divタグにspanタグとpタグを格納
   leftContentElm.appendChild(span);
   leftContentElm.appendChild(p);
+
+
+
 
 
   // 完了buttonを生成　complete-buttonクラスを付与
@@ -95,7 +100,7 @@ function addTodoItem() {
     span.className = "category-tag";
     span.innerText = addTarget.firstElementChild.firstElementChild.innerHTML;
     span.classList.add(setCategoryTagClass(span.innerText));
-    
+    // element.classList.add("クラス名");
     // pタグ生成してtodo-titleクラスを付与
     const p = document.createElement("p");
     p.className = "todo-title";
@@ -112,7 +117,11 @@ function addTodoItem() {
     const backButton = document.createElement("button");
     backButton.className = "back-button";
     backButton.textContent = "未完了に戻す";
+  
     
+
+
+
     // 削除ボタンを生成 delete-buttonクラスを付与
     const deleteButton = document.createElement("button");
     deleteButton.className = "delete-button";
@@ -123,15 +132,15 @@ function addTodoItem() {
       deleteTodo(e);
     });
 
-    // 戻す・削除ボタン要素を内包するdiv要素を生成 option-buttonsクラスを付与
-    const div = document.createElement("div");
-    div.className = "option-buttons";
-    div.appendChild(backButton);
-    div.appendChild(deleteButton);
+    // 戻す・削除ボタン要素を内包するdiv要素を生成 right-contentクラスを付与
+    const rightContentElm = document.createElement("div");
+    rightContentElm.className = "right-content";
+    rightContentElm.appendChild(backButton);
+    rightContentElm.appendChild(deleteButton);
 
 
     li.appendChild(leftContentElm);
-    li.appendChild(div);
+    li.appendChild(rightContentElm);
 
     const ul = document.getElementById("completeList");
     ul.appendChild(li);
@@ -149,9 +158,9 @@ function addTodoItem() {
     deleteTodo(e);
   });
 
-  // 完了・削除ボタン要素を内包するdiv要素を生成 option-buttonsクラスを付与
+  // 完了・削除ボタン要素を内包するdiv要素を生成 right-contentクラスを付与
   const div = document.createElement("div");
-  div.className = "option-buttons";
+  div.className = "right-content";
   div.appendChild(completeButton);
   div.appendChild(deleteButton);
 
@@ -163,10 +172,10 @@ function addTodoItem() {
 
   // 以下devlopブランチでコメントイン
 
-  todoItemArray.push(li);
-  console.log(todoItemArray);
-  for (let i=0; i < todoItemArray.length; i++) {
-    todoItemFragment.appendChild(todoItemArray[i]);
+  incompleteTodoItemArray.push(li);
+  console.log(incompleteTodoItemArray);
+  for (let i=0; i < incompleteTodoItemArray.length; i++) {
+    todoItemFragment.appendChild(incompleteTodoItemArray[i]);
   }
   console.log(todoItemFragment);
 

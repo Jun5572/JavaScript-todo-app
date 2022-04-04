@@ -53,12 +53,12 @@ h1, h2 {
   opacity: 1;
 }
 
-.option-buttons {
+.right-content {
   display: flex;
   align-items: center;
 }
 
-.option-buttons button {
+.right-content button {
   margin: 0 5px;
 }
 
