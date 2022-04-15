@@ -25,11 +25,24 @@
           </select>
           <button id="addButton" class="add-button">登録</button>
         </form>
+        <form onsubmit="return false;">
+          <select id="searchType">
+            <option value="0" default>-選択してください-</option>
+            <option value="仕事">仕事</option>
+            <option value="プライベート">プライベート</option>
+            <option value="家族">家族</option>
+            <option value="その他">その他</option>
+          </select>
+          <button id="searchButton" class="search-button">で絞込み</button>
+        </form>
+
       </div>
+      <button id="sortButton" type="button">sort</button>
+      
     </section>
 
     <!-- 未完了のTodo -->
-    <section class="incomplete-section">
+    <section class="incomplete-section" id="unfinished">
       <h2>未完了</h2>
       <ul id="incompleteList" class="todo-list">
 
@@ -48,7 +61,7 @@
     </section>
     
     <!-- 未完了のTodo -->
-    <section class="complete-section">
+    <section class="complete-section" id="finished">
       <h2>完了</h2>
       <ul id="completeList" class="todo-list"></ul>
     </section>

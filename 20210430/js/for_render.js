@@ -1,121 +1,101 @@
-// 登録ボタンが押された時、inputをブランクにして未完了リストに要素を生成して追加する
-
 // 要素取得
 let inputFormElm = document.querySelector(".input-form-wrapper");
 let todoInputElm = document.getElementById("inputTodo");
 let addButtonElm = document.getElementById("addButton");
+let sortButtonElm = document.getElementById("sortButton");
+let searchButtonElm = document.getElementById("searchButton");
 let categorySelectBoxElm = document.getElementById("category");
 
-// 未完了のtodoリスト要素
-// 未完了のtodoアイテム配列
-let incompleteListElm = document.getElementById("incompleteList");
-let incompleteTodoItems = [];
-let incompleteTodoNodes = [];
-// 完了のtodoリスト要素
-// 完了のtodoアイテム配列
-const completeList = document.getElementById("completeList");
-let completeTodoItems = [];
-let completeTodoNodes = [];
-addButtonElm.addEventListener("click", addTodoItem);
+const incompleteListId = document.querySelector("#incompleteList").id;
+const completeListId = document.querySelector("#completeList").id;
+let lastId = 1;
 
-/************************************************************
-登録ボタンがクリックされたときに発火する関数
-*************************************************************/
-function addTodoItem() {
-  createTodoObject();
-  createTodoElement();
-  renderTodo(incompleteListElm, incompleteTodoNodes);
-  categorySelectBoxElm.value = "0";
-  // デバッグ用
-  console.log(incompleteTodoItems);
-  console.log(incompleteTodoNodes);
-}
+// 操作元となるtodoリスト要素
+let todoItemObjectArray = [];
 
 
-// todoアイテムを描画する関数
-// 引数１：描画する親要素
-// 引数２：描画する要素
-function renderTodo(ParentElement, todoNodes) {
-  let fragment = document.createDocumentFragment();
-  for (let i=0; i<todoNodes.length; i++) {      
-    fragment.appendChild(todoNodes[i]);
-  }
-  ParentElement.appendChild(fragment);
-}
-
-
-// incompleteTodoItemsの配列にtodoオブジェクトを追加する
-function createTodoObject() {
-  let todoItem = {
+// 登録されたtodoをオブジェクト配列へプッシュ
+function addTodoObjectArray() {
+  let todoItemObject = {
+    id: lastId,
     title: todoInputElm.value,
-    tag: categorySelectBoxElm.value,
-    complete: false
+    category: categorySelectBoxElm.value,
+    isComplete: false
   }
-  incompleteTodoItems.push(todoItem);
+  todoItemObjectArray.push(todoItemObject);
+  lastId++;
+  return todoItemObjectArray;
 }
 
-function createTodoElement(todoItems) {
-  let leftContentElm = makeElement("div", ["left-content"]);
-  let categoryTagElm = makeElement("span", ["category-tag", setCategoryTagClass(categorySelectBoxElm.value)]);
-  let todoTitleElm = makeElement("p", ["todo-title"]);
-  leftContentElm.appendChild(categoryTagElm);
-  leftContentElm.appendChild(todoTitleElm);
-  
-  let rightContentElm = makeElement("div", ["right-content"]);
-  let moveCompleteButtonElm = makeElement("button", ["complete-button"], "完了にする");
-  let deleteButtonElm = makeElement("button", ["delete-button"], "削除");
-  rightContentElm.appendChild(moveCompleteButtonElm);
-  rightContentElm.appendChild(deleteButtonElm);
-  
-  let todoItemElm = makeElement("li", ["todo-item"]);
-  todoItemElm.appendChild(leftContentElm);
-  todoItemElm.appendChild(rightContentElm);
-
-  // setInnerText(categoryTagElm, tagValue);
-  // setInnerText(todoTitleElm, todoValue);
-
-  deleteButtonElm.addEventListener("click", deleteTodoItem);
-
-  incompleteTodoNodes.push(todoItemElm);
-
-  return todoItemElm;
+function removeTodoObjectArray(target) {
+  let index = todoItemObjectArray.findIndex(todo => todo.id == target.id);
+  todoItemObjectArray.splice(index, 1);
 }
 
-// 要素のinnerTextにvalueをセットする関数
-// 引数にはtodoのオブジェクト配列を渡す
-function setEachValue(todoItems) {
-  for (let i=0; i < todoItems.length; i++) {
-    todoItems[i].tag
-    todoItems[i].title
+// ターゲットとなるtodoアイテムのステータスを変更
+function changeStatus(target) {
+  let index = todoItemObjectArray.findIndex(todo => todo.id == target.id);
+  todoItemObjectArray[index].isComplete = !todoItemObjectArray[index].isComplete;
+}
+
+// todoアイテムをレンダーする関数
+// originalData：レンダーするオブジェクト配列
+// isComplete：true(完了) or false(未完了)
+function renderTodo(originalData, isComplete) {
+  let renderSelector = '';
+  let renderTargets = [];
+  let buttonSelector = '';
+  let buttonText = '';
+  let html = '';
+  
+  // isCompleteの状態によって表示させるセクションを変更
+  if (!isComplete) {
+    // complete:falseのtodoの配列が生成される
+    renderTargets = originalData.filter( data => !data.isComplete);
+    buttonClassName = "complete-button";
+    buttonText = '完了にする';
+    buttonSelector = ".complete-button";
+    renderSelector = incompleteListId;
+  } else {
+    // complete:trueのtodoの配列が生成される
+    renderTargets = originalData.filter( data => data.isComplete);
+    buttonClassName = "incomplete-button";
+    buttonText = '未完了にする';
+    buttonSelector = ".incomplete-button";
+    renderSelector = completeListId;
   }
-}
+  // htmlテキストを生成
+  renderTargets.forEach(target => {
+    let optionClassName = setCategoryTagClass(target.category);
+    html +=`
+      <li id=${target.id} class="todo-item">
+        <div class="left-content">
+          <span class="category-tag ${optionClassName}">${target.category}</span>
+          <p class="todo-title">${target.title}</p>
+        </div>
+        <div class="right-content">
+          <button class=${buttonClassName}>${buttonText}</button>
+          <button class="delete-button">削除</button>
+        </div>
+      </li>
+    `;
+  });
+  const element = document.getElementById(renderSelector);
+  element.innerHTML = html;
 
-function setInnerText(Element, Value) {
-  Element.innerText = Value;
-}
+  let todoItems = [...element.querySelectorAll(".todo-item")];
+  if (todoItems) {
+    todoItems.forEach(todoItem => {
+      todoItem.querySelector(buttonSelector).addEventListener("click", switchTodoItem);
+      todoItem.querySelector(".delete-button").addEventListener("click", deleteTodoItem);
+    });
+  }
 
-// if (isBlank(todoInputElm.value)) {
-//   alert("TODOを入力してください。");
-//   return;
-// }
-// if (isSelectedCategory(categorySelectBoxElm.value)) {
-//   alert("カテゴリーを選択してください");
-//   return;
-// }
+}
 
 ///////////////////////////////////////////////////////////
 
-// 削除ボタンがクリックされたときに発火する関数
-function deleteTodoItem(event, deleteSection) {
-  let deleteItemElm = event.target.closest(".todo-item");
-  let deleteItemTitle = deleteItemElm.querySelector(".todo-title").innerText;
-  console.log(deleteItemElm);
-  console.log(deleteItemTitle);
 
-  for (let i=0; i < incompleteTodoItems.length; i++) {
-    incompleteTodoItems[i]
-  }
-}
 
 // カテゴリーの種類によってタグの色分け
 function setCategoryTagClass(selectValue) {
@@ -123,40 +103,96 @@ function setCategoryTagClass(selectValue) {
   switch (selectValue) {
     case "仕事":
       className = "work";
-      break;
-      case "プライベート":
+    break;
+    case "プライベート":
       className = "private";  
-      break;
+    break;
     case "家族":
       className = "family";
-      break;
-      case "その他":
-        className = "other";
-      break;
+    break;
+    case "その他":
+      className = "other";
+    break;
     default:
       className = "other";
-      break;
+    break;
     }
     return className;
-}
-
-
+  }
+  
+  
 // 空欄かチェックする関数////////////////////
 // 空欄：戻り値：true
 // 空欄ではない：戻り値：false
 function isBlank(value) {
   return value === "" ? true : false; 
 }
-
 /////////////////////////////////////////
+
 
 // セレクトボックスが「選択してください」のまま送信されていないかチェック
 function isSelectedCategory(selectValue) {
   return selectValue === "0" ? true : false;
 }
-////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////
 
 
+
+
+// 登録ボタンがクリックされたときに発火する関数
+function addTodoItem() {
+  addTodoObjectArray();
+  renderTodo(todoItemObjectArray, false);
+  renderTodo(todoItemObjectArray, true);
+}
+
+// 完了ボタンが押されたときに発火する関数
+function switchTodoItem(event) {
+  let target = event.target.closest(".todo-item");
+  changeStatus(target);
+  renderTodo(todoItemObjectArray, false);
+  renderTodo(todoItemObjectArray, true);
+}
+
+// 削除ボタンがクリックされたときに発火する関数
+function deleteTodoItem(event) {
+  let target = event.target.closest(".todo-item");
+  removeTodoObjectArray(target);
+  renderTodo(todoItemObjectArray, false);
+  renderTodo(todoItemObjectArray, true);
+}
+
+// 並べ替えボタンがクリックされたときに発火する関数
+function sortTodo() {
+  todoItemObjectArray.sort((first, second) => {
+    let firstCategory = first.category;
+    let secondCategory = second.category;
+    
+    if (firstCategory < secondCategory) {
+      return -1;
+    }
+    if (firstCategory > secondCategory) {
+      return 1;
+    }
+    return 0;
+  })
+  console.log("todoItemObjectArray=", todoItemObjectArray);
+  renderTodo(todoItemObjectArray, false);
+  renderTodo(todoItemObjectArray, true);
+}
+
+// 絞り込みボタンがクリックされたときに発火する関数
+function searchTodo() {
+  let resultTodos = '';
+  let searchCategoryType = document.getElementById("searchType").value;
+  console.log("絞込みカテゴリー", searchCategoryType);
+  resultTodos = todoItemObjectArray.filter((todo) => todo.category == searchCategoryType);
+  console.log("serchResult=",resultTodos);
+
+}
+
+
+// utility
 // 要素を生成してクラスを付与する関数。value値が存在したらinnerTextにvalue値をセット
 function makeElement(tagName, classNames, value) {
   let element = document.createElement(tagName);
@@ -171,6 +207,8 @@ function makeElement(tagName, classNames, value) {
   return element;
 }
 
-function resetValue(element) {
-  element.value = "";
-}
+
+addButtonElm.addEventListener("click", addTodoItem);
+sortButtonElm.addEventListener("click", sortTodo);
+searchButtonElm.addEventListener("click", searchTodo);
+
